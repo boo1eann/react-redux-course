@@ -11,18 +11,18 @@ import Body from './layouts/Body/Body';
 import LeftPanel from './layouts/LeftPanel/LeftPanel';
 
 const INITIAL_DATA = [
-  // {
-  //   id: 1,
-  //   title: 'Подготовка к обновлению курсов',
-  //   text: 'Сегодня провёл весь день за...',
-  //   date: new Date(),
-  // },
-  // {
-  //   id: 2,
-  //   title: 'Поход в годы',
-  //   text: 'Думал, что очень много време...',
-  //   date: new Date(),
-  // },
+  {
+    id: 1,
+    title: 'Подготовка к обновлению курсов',
+    text: 'Сегодня провёл весь день за...',
+    date: new Date(),
+  },
+  {
+    id: 2,
+    title: 'Поход в годы',
+    text: 'Думал, что очень много време...',
+    date: new Date(),
+  },
 ];
 
 function App() {
@@ -40,30 +40,12 @@ function App() {
     ]);
   };
 
-  const sortJournals = (a, b) => {
-    if (a.date < b.date) {
-      return 1;
-    } else {
-      return -1;
-    }
-  };
-
   return (
     <div className="app">
       <LeftPanel>
         <Header />
         <JournalAddButton />
-        <JournalList>
-          {journals.length === 0 ? (
-            <p>Записей пока нет, добавьте первую</p>
-          ) : (
-            [...journals].sort(sortJournals).map((el) => (
-              <CardButton key={el.id}>
-                <JournalItem title={el.title} text={el.text} date={el.date} />
-              </CardButton>
-            ))
-          )}
-        </JournalList>
+        <JournalList journals={journals} />
       </LeftPanel>
       <Body>
         <JournalForm addJournalHandler={addJournalHandler} />
