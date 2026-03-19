@@ -11,23 +11,41 @@ import Body from './layouts/Body/Body';
 import LeftPanel from './layouts/LeftPanel/LeftPanel';
 
 const INITIAL_DATA = [
-  {
-    title: 'Подготовка к обновлению курсов',
-    text: 'Сегодня провёл весь день за...',
-    date: '2024-04-23',
-  },
-  {
-    title: 'Поход в годы',
-    text: 'Думал, что очень много време...',
-    date: '2025-05-31',
-  },
+  // {
+  //   id: 1,
+  //   title: 'Подготовка к обновлению курсов',
+  //   text: 'Сегодня провёл весь день за...',
+  //   date: new Date(),
+  // },
+  // {
+  //   id: 2,
+  //   title: 'Поход в годы',
+  //   text: 'Думал, что очень много време...',
+  //   date: new Date(),
+  // },
 ];
 
 function App() {
   const [journals, setJournals] = useState(INITIAL_DATA);
 
   const addJournalHandler = (journal) => {
-    setJournals([...journals, journal]);
+    setJournals((oldJournals) => [
+      ...oldJournals,
+      {
+        text: journal.text,
+        title: journal.title,
+        date: new Date(journal.date),
+        id: Math.max(...oldJournals.map((journal) => journal.id)) + 1,
+      },
+    ]);
+  };
+
+  const sortJournals = (a, b) => {
+    if (a.date < b.date) {
+      return 1;
+    } else {
+      return -1;
+    }
   };
 
   return (
@@ -36,11 +54,15 @@ function App() {
         <Header />
         <JournalAddButton />
         <JournalList>
-          {journals.map((el) => (
-            <CardButton>
-              <JournalItem title={el.title} text={el.text} date={el.date} />
-            </CardButton>
-          ))}
+          {journals.length === 0 ? (
+            <p>Записей пока нет, добавьте первую</p>
+          ) : (
+            [...journals].sort(sortJournals).map((el) => (
+              <CardButton key={el.id}>
+                <JournalItem title={el.title} text={el.text} date={el.date} />
+              </CardButton>
+            ))
+          )}
         </JournalList>
       </LeftPanel>
       <Body>
