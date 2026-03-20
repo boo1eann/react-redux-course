@@ -11,18 +11,18 @@ import Body from './layouts/Body/Body';
 import LeftPanel from './layouts/LeftPanel/LeftPanel';
 
 const INITIAL_DATA = [
-  {
-    id: 1,
-    title: 'Подготовка к обновлению курсов',
-    text: 'Сегодня провёл весь день за...',
-    date: new Date(),
-  },
-  {
-    id: 2,
-    title: 'Поход в годы',
-    text: 'Думал, что очень много време...',
-    date: new Date(),
-  },
+  // {
+  //   id: 1,
+  //   title: 'Подготовка к обновлению курсов',
+  //   text: 'Сегодня провёл весь день за...',
+  //   date: new Date(),
+  // },
+  // {
+  //   id: 2,
+  //   title: 'Поход в годы',
+  //   text: 'Думал, что очень много време...',
+  //   date: new Date(),
+  // },
 ];
 
 function App() {
@@ -35,7 +35,7 @@ function App() {
         text: journal.text,
         title: journal.title,
         date: new Date(journal.date),
-        id: Math.max(...oldJournals.map((journal) => journal.id)) + 1,
+        id: oldJournals.length > 0 ? Math.max(...oldJournals.map((i) => i.id)) + 1 : 1,
       },
     ]);
   };
