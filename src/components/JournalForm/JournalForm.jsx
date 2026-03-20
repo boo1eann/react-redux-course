@@ -44,19 +44,35 @@ function JournalForm({ addJournalHandler }) {
 
   return (
     <form className={styles.journalForm} onSubmit={addJournalItem}>
-      <input
-        type="text"
-        name="title"
-        className={cn(styles.input, {
-          [styles.invalid]: !formValidState.title,
-        })}
-      />
-      <input
-        type="date"
-        name="date"
-        className={`${styles.input} ${formValidState.date ? '' : styles.invalid}`}
-      />
-      <input type="text" name="tag" />
+      <div>
+        <input
+          type="text"
+          name="title"
+          className={cn(styles['input-title'], {
+            [styles.invalid]: !formValidState.title,
+          })}
+        />
+      </div>
+      <div className={styles['form-row']}>
+        <label htmlFor="date" className={styles['form-label']}>
+          <img src="/calendar.svg" alt="Иконка календаря" />
+          <span>Дата</span>
+        </label>
+        <input
+          id="date"
+          type="date"
+          name="date"
+          className={`${styles.input} ${formValidState.date ? '' : styles.invalid}`}
+        />
+      </div>
+      <div className={styles['form-row']}>
+        <label htmlFor="tag" className={styles['form-label']}>
+          <img src="/folder.svg" alt="Иконка папки" />
+          <span>Метки</span>
+        </label>
+        <input id="tag" type="text" name="tag" className={styles.input} />
+      </div>
+
       <textarea
         name="text"
         className={`${styles.input} ${formValidState.text ? '' : styles.invalid}`}
