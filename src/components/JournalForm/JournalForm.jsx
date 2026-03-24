@@ -1,16 +1,34 @@
 import styles from './JournalForm.module.css';
 import Button from '../Button/Button';
-import { useReducer, useEffect } from 'react';
+import { useReducer, useEffect, useRef } from 'react';
 import cn from 'classnames';
 import { formReducer, INITIAL_STATE } from './JournalForm.state';
 
 function JournalForm({ addJournalHandler }) {
   const [formState, dispatchForm] = useReducer(formReducer, INITIAL_STATE);
   const { isValid, isFormReadyToSubmit, values } = formState;
+  const titleRef = useRef();
+  const dateRef = useRef();
+  const textRef = useRef();
+
+  const focusError = (isValid) => {
+    switch (true) {
+      case !isValid.title:
+        titleRef.current.focus();
+        break;
+      case !isValid.date:
+        dateRef.current.focus();
+        break;
+      case !isValid.text:
+        textRef.current.focus();
+        break;
+    }
+  };
 
   useEffect(() => {
     let timerId;
     if (!isValid.date || !isValid.text || !isValid.title) {
+      focusError(isValid);
       timerId = setTimeout(() => {
         dispatchForm({ type: 'RESET_VALIDITY' });
       }, 2000);
@@ -26,7 +44,7 @@ function JournalForm({ addJournalHandler }) {
       addJournalHandler(values);
       dispatchForm({ type: 'CLEAR' });
     }
-  }, [isFormReadyToSubmit]);
+  }, [isFormReadyToSubmit, addJournalHandler, values]);
 
   const onChange = (e) => {
     dispatchForm({
@@ -47,6 +65,7 @@ function JournalForm({ addJournalHandler }) {
       <div>
         <input
           type="text"
+          ref={titleRef}
           onChange={onChange}
           value={values.title}
           name="title"
@@ -63,6 +82,7 @@ function JournalForm({ addJournalHandler }) {
         <input
           id="date"
           type="date"
+          ref={dateRef}
           onChange={onChange}
           value={values.date}
           name="date"
@@ -86,6 +106,7 @@ function JournalForm({ addJournalHandler }) {
 
       <textarea
         name="text"
+        ref={textRef}
         onChange={onChange}
         value={values.text}
         className={`${styles.input} ${isValid.text ? '' : styles.invalid}`}
