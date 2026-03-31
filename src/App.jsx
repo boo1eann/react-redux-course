@@ -9,6 +9,7 @@ import JournalList from './components/JournalList/JournalList';
 import Body from './layouts/Body/Body';
 import LeftPanel from './layouts/LeftPanel/LeftPanel';
 import { useLocalStorage } from './hooks/use-localstorage.hook';
+import { UserContext, UserContextProvider } from './context/user.context';
 
 function mapJournals(journals) {
   if (!journals) {
@@ -20,13 +21,11 @@ function mapJournals(journals) {
 
 function App() {
   const [journals, setJournals] = useLocalStorage('data');
-
   const addJournalHandler = (journal) => {
     setJournals([
       ...mapJournals(journals),
       {
-        text: journal.text,
-        title: journal.title,
+        ...journal,
         date: new Date(journal.date),
         id: journals.length > 0 ? Math.max(...journals.map((i) => i.id)) + 1 : 1,
       },
@@ -34,16 +33,18 @@ function App() {
   };
 
   return (
-    <div className="app">
-      <LeftPanel>
-        <Header />
-        <JournalAddButton />
-        <JournalList journals={mapJournals(journals)} />
-      </LeftPanel>
-      <Body>
-        <JournalForm addJournalHandler={addJournalHandler} />
-      </Body>
-    </div>
+    <UserContextProvider>
+      <div className="app">
+        <LeftPanel>
+          <Header />
+          <JournalAddButton />
+          <JournalList journals={mapJournals(journals)} />
+        </LeftPanel>
+        <Body>
+          <JournalForm addJournalHandler={addJournalHandler} />
+        </Body>
+      </div>
+    </UserContextProvider>
   );
 }
 

@@ -3,6 +3,8 @@ import Button from '../Button/Button';
 import { useReducer, useEffect, useRef } from 'react';
 import { formReducer, INITIAL_STATE } from './JournalForm.state';
 import Input from '../Input/Input';
+import { UserContext } from '../../context/user.context';
+import { useContext } from 'react';
 
 function JournalForm({ addJournalHandler }) {
   const [formState, dispatchForm] = useReducer(formReducer, INITIAL_STATE);
@@ -10,6 +12,7 @@ function JournalForm({ addJournalHandler }) {
   const titleRef = useRef();
   const dateRef = useRef();
   const textRef = useRef();
+  const { userId } = useContext(UserContext);
 
   const focusError = (isValid) => {
     switch (true) {
@@ -41,7 +44,7 @@ function JournalForm({ addJournalHandler }) {
 
   useEffect(() => {
     if (isFormReadyToSubmit) {
-      addJournalHandler(values);
+      addJournalHandler({ ...values, userId });
       dispatchForm({ type: 'CLEAR' });
     }
   }, [isFormReadyToSubmit, addJournalHandler, values]);
