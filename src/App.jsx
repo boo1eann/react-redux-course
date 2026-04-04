@@ -10,6 +10,7 @@ import Body from './layouts/Body/Body';
 import LeftPanel from './layouts/LeftPanel/LeftPanel';
 import { useLocalStorage } from './hooks/use-localstorage.hook';
 import { UserContext, UserContextProvider } from './context/user.context';
+import { useState } from 'react';
 
 function mapJournals(journals) {
   if (!journals) {
@@ -21,15 +22,34 @@ function mapJournals(journals) {
 
 function App() {
   const [journals, setJournals] = useLocalStorage('data');
+  const [selectedItem, setSelectedItem] = useState(null);
+
   const addJournalHandler = (journal) => {
-    setJournals([
-      ...mapJournals(journals),
-      {
-        ...journal,
-        date: new Date(journal.date),
-        id: journals.length > 0 ? Math.max(...journals.map((i) => i.id)) + 1 : 1,
-      },
-    ]);
+    if (!journal.id) {
+      setJournals([
+        ...mapJournals(journals),
+        {
+          ...journal,
+          date: new Date(journal.date),
+          id: journals.length > 0 ? Math.max(...journals.map((i) => i.id)) + 1 : 1,
+        },
+      ]);
+    } else {
+      setJournals([
+        ...mapJournals(journals).map((i) => {
+          if (i.id === journal.id) {
+            return {
+              ...journal,
+            };
+          }
+          return i;
+        }),
+      ]);
+    }
+  };
+
+  const deleteItem = (id) => {
+    setJournals([...journals.filter((i) => i.id !== id)]);
   };
 
   return (
@@ -37,11 +57,15 @@ function App() {
       <div className="app">
         <LeftPanel>
           <Header />
-          <JournalAddButton />
-          <JournalList journals={mapJournals(journals)} />
+          <JournalAddButton clearForm={() => setSelectedItem(null)} />
+          <JournalList journals={mapJournals(journals)} setItem={setSelectedItem} />
         </LeftPanel>
         <Body>
-          <JournalForm addJournalHandler={addJournalHandler} />
+          <JournalForm
+            addJournalHandler={addJournalHandler}
+            onDelete={deleteItem}
+            data={selectedItem}
+          />
         </Body>
       </div>
     </UserContextProvider>

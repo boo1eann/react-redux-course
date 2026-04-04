@@ -6,7 +6,7 @@ import Input from '../Input/Input';
 import { UserContext } from '../../context/user.context';
 import { useContext } from 'react';
 
-function JournalForm({ addJournalHandler }) {
+function JournalForm({ addJournalHandler, data, onDelete }) {
   const [formState, dispatchForm] = useReducer(formReducer, INITIAL_STATE);
   const { isValid, isFormReadyToSubmit, values } = formState;
   const titleRef = useRef();
@@ -29,6 +29,14 @@ function JournalForm({ addJournalHandler }) {
   };
 
   useEffect(() => {
+    if (!data) {
+      dispatchForm({ type: 'CLEAR' });
+      dispatchForm({ type: 'SET_VALUE', payload: { userId } });
+    }
+    dispatchForm({ type: 'SET_VALUE', payload: { ...data } });
+  }, [data]);
+
+  useEffect(() => {
     let timerId;
     if (!isValid.date || !isValid.text || !isValid.title) {
       focusError(isValid);
@@ -44,10 +52,15 @@ function JournalForm({ addJournalHandler }) {
 
   useEffect(() => {
     if (isFormReadyToSubmit) {
-      addJournalHandler({ ...values, userId });
+      addJournalHandler(values);
       dispatchForm({ type: 'CLEAR' });
+      dispatchForm({ type: 'SET_VALUE', payload: { userId } });
     }
-  }, [isFormReadyToSubmit, addJournalHandler, values]);
+  }, [isFormReadyToSubmit, addJournalHandler, values, userId]);
+
+  useEffect(() => {
+    dispatchForm({ type: 'SET_VALUE', payload: { userId } });
+  }, [userId]);
 
   const onChange = (e) => {
     dispatchForm({
@@ -63,9 +76,15 @@ function JournalForm({ addJournalHandler }) {
     dispatchForm({ type: 'SUBMIT' });
   };
 
+  const deleteJournalItem = () => {
+    onDelete(data.id);
+    dispatchForm({ type: 'CLEAR' });
+    dispatchForm({ type: 'SET_VALUE', payload: { userId } });
+  };
+
   return (
     <form className={styles.journalForm} onSubmit={addJournalItem}>
-      <div>
+      <div className={styles['form-row']}>
         <Input
           type="text"
           ref={titleRef}
@@ -75,6 +94,11 @@ function JournalForm({ addJournalHandler }) {
           appearance="title"
           isValid={isValid.title}
         />
+        {data?.id && (
+          <button className={styles['delete']} type="button" onClick={deleteJournalItem}>
+            <img src="/archive.svg" alt="Кнопка удалить" />
+          </button>
+        )}
       </div>
       <div className={styles['form-row']}>
         <label htmlFor="date" className={styles['form-label']}>
@@ -86,7 +110,7 @@ function JournalForm({ addJournalHandler }) {
           type="date"
           ref={dateRef}
           onChange={onChange}
-          value={values.date}
+          value={values.date ? new Date(values.date).toISOString().slice(0, 10) : ''}
           name="date"
           isValid={isValid.date}
         />
@@ -106,7 +130,7 @@ function JournalForm({ addJournalHandler }) {
         value={values.text}
         className={`${styles.input} ${isValid.text ? '' : styles.invalid}`}
       ></textarea>
-      <Button text="Сохранить" />
+      <Button>Сохранить</Button>
     </form>
   );
 }
